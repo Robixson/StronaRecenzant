@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Profil osoby</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <h1>Recenzant</h1>
+  <input type="checkbox" id="menu-toggle" />
+  <label for="menu-toggle" class="hamburger">&#9776;</label>
+  <nav id="menu" class="menu"></nav>
+</header>
+<main>
+  <h2 id="profile-name">Profil</h2>
+  <p>Kategoria: <span id="profile-category"></span></p>
+  <h3>Recenzje</h3>
+  <ul id="review-list"></ul>
+  <div id="add-review-container" style="display: none;">
+    <h3>Dodaj recenzję</h3>
+    <form onsubmit="addReview(event)">
+      <input type="number" id="review-rating" min="1" max="5" placeholder="Ocena" required><br>
+      <textarea id="review-comment" placeholder="Komentarz" required></textarea><br>
+      <button type="submit">Dodaj</button>
+    </form>
+  </div>
+</main>
+<script src="main.js"></script>
+</body>
+</html>
