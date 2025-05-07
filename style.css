@@ -13,3 +13,7 @@ button { padding: 10px 20px; background: #b71c1c; color: white; border: none; cu
   nav.menu { display: none; flex-direction: column; position: absolute; top: 50px; left: 0; background: #b71c1c; width: 100%; padding: 10px; }
   #menu-toggle:checked + .hamburger + nav.menu { display: flex; }
 }
+form {
+    max-width: 400px;
+    margin: 0 auto;
+}
