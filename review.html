@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dodaj recenzję</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Recenzant</h1>
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="hamburger">&#9776;</label>
+    <nav id="menu" class="menu"></nav>
+  </header>
+  <main>
+    <h2>Dodaj recenzję</h2>
+    <form onsubmit="addReview(event)">
+      <input type="number" id="review-rating" min="1" max="5" placeholder="Ocena" required /><br />
+      <textarea id="review-comment" placeholder="Komentarz" required></textarea><br />
+      <button type="submit">Wyślij</button>
+    </form>
+  </main>
+  <script src="main.js"></script>
+</body>
+</html>
