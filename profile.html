@@ -1,1 +1,29 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Profil</title><script type='module' src='main.js'></script><link rel='stylesheet' href='style.css'></head><body><header><h1>Recenzant</h1><nav id='nav'></nav></header><main><h2 id='profile-name'></h2><p>Kategoria: <span id='profile-category'></span></p><form id='review-form'><input type='number' id='review-rating' required><textarea id='review-comment'></textarea><button type='submit'>Dodaj recenzję</button></form><ul id='review-list'></ul></main></body></html>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profil</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Recenzant</h1>
+    <nav id="nav"></nav>
+  </header>
+  <main>
+    <h2 id="profile-name">Nazwa profilu</h2>
+    <p>Kategoria: <span id="profile-category"></span></p>
+
+    <h3>Dodaj recenzję</h3>
+    <form id="review-form">
+      <input type="number" id="review-rating" placeholder="Ocena 1–5" required />
+      <textarea id="review-comment" placeholder="Komentarz" required></textarea>
+      <button type="submit">Dodaj recenzję</button>
+    </form>
+
+    <h3>Recenzje</h3>
+    <ul id="review-list"></ul>
+  </main>
+</body>
+</html>
