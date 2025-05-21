@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       nav.innerHTML = `
         <a href="login.html">Zaloguj się</a>
-        <a href="profiles.html">Profile publiczne</a>
+        <a href="index.html">Profile publiczne</a>
       `;
     }
   });
