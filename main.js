@@ -17,17 +17,18 @@ const auth = getAuth(app);
 const nav = document.getElementById("nav");
 const menuBtn = document.getElementById("menu-button");
 
-// Obsługa rozwijania menu
-menuBtn.addEventListener("click", () => {
-  nav.classList.toggle("hidden");
-});
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    nav.classList.toggle("hidden");
+  });
+}
 
-// Ukrywanie menu po kliknięciu poza nim
 document.addEventListener("click", (event) => {
-  if (!menuBtn.contains(event.target) && !nav.contains(event.target)) {
+  if (menuBtn && !menuBtn.contains(event.target) && !nav.contains(event.target)) {
     nav.classList.add("hidden");
   }
 });
+
 
 // Funkcja wylogowania
 window.logout = function() {
