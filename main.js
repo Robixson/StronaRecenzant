@@ -1,3 +1,7 @@
+// main.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCSbsC1xbXwdSvwqnvjounLvC-S1OmdICw",
   authDomain: "recenzant-362f1.firebaseapp.com",
@@ -8,7 +12,12 @@ const firebaseConfig = {
   measurementId: "G-DH46ZX2765"
 };
 
+// Inicjalizacja Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 const nav = document.getElementById("nav");
+
 onAuthStateChanged(auth, (user) => {
   if (!nav) return;
   nav.innerHTML = user
@@ -24,3 +33,9 @@ onAuthStateChanged(auth, (user) => {
     `;
 });
 
+// Funkcja wylogowania
+window.logout = function() {
+  signOut(auth).catch(error => {
+    console.error("Błąd podczas wylogowania:", error);
+  });
+};
