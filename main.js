@@ -22,16 +22,16 @@ window.logout = function() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const nav = document.getElementById("nav");
-  const hamburger = document.getElementById("hamburger");
+  const menuBtn = document.getElementById("menu-button");
 
-  // Toggle pokaz/ukryj menu po kliknięciu hamburgera
-  hamburger.addEventListener("click", () => {
+  // Pokaż/ukryj menu po kliknięciu napisu "Menu"
+  menuBtn.addEventListener("click", () => {
     nav.classList.toggle("hidden");
   });
 
-  // Ukryj menu po kliknięciu gdziekolwiek indziej
+  // Ukryj menu, jeśli klikniemy poza menu i przyciskiem
   document.addEventListener("click", (event) => {
-    if (!hamburger.contains(event.target) && !nav.contains(event.target)) {
+    if (!menuBtn.contains(event.target) && !nav.contains(event.target)) {
       nav.classList.add("hidden");
     }
   });
