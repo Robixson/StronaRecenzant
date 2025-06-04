@@ -84,8 +84,16 @@ const loginForm = document.getElementById("login-form");
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const email = loginForm.email.value;
-    const password = loginForm.password.value;
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+
+    if (!emailInput || !passwordInput) {
+      console.error("Nie znaleziono inputów email lub password");
+      return;
+    }
+
+    const email = emailInput.value;
+    const password = passwordInput.value;
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
@@ -100,6 +108,7 @@ if (loginForm) {
       });
   });
 }
+
 
 // Rejestracja (na register.html)
 const registerForm = document.getElementById("register-form");
