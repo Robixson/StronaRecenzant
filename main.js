@@ -10,9 +10,13 @@ import {
   getFirestore,
   collection,
   getDocs,
-  doc,
   getDoc,
+  addDoc,
+  doc,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCSbsC1xbXwdSvwqnvjounLvC-S1OmdICw",
