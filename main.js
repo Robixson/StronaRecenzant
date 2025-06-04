@@ -84,11 +84,15 @@ const loginForm = document.getElementById("login-form");
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
+
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
 
+    console.log("emailInput:", emailInput);
+    console.log("passwordInput:", passwordInput);
+
     if (!emailInput || !passwordInput) {
-      console.error("Nie znaleziono inputów email lub password");
+      console.error("Nie znaleziono inputa email lub password");
       return;
     }
 
@@ -97,7 +101,7 @@ if (loginForm) {
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        window.location.href = "index.html"; // przekierowanie po zalogowaniu
+        window.location.href = "index.html";
       })
       .catch(() => {
         const loginError = document.getElementById("login-error");
@@ -108,6 +112,7 @@ if (loginForm) {
       });
   });
 }
+
 
 
 // Rejestracja (na register.html)
