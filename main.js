@@ -94,7 +94,7 @@ async function loadProfiles() {
   if (!profilesContainer) return;
 
   try {
-    const querySnapshot = await getDocs(collection(db, "profiles"));
+    const querySnapshot = await getDocs(collection(db, "baza"));
     profilesContainer.innerHTML = "";
 
     if (querySnapshot.empty) {
