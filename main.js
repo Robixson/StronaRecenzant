@@ -85,3 +85,6 @@ if (registerForm) {
       });
   });
 }
+
+window.logout = logout;
+
