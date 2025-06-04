@@ -1,10 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import {
   getAuth,
-  signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 import {
   getFirestore,
