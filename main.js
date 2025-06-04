@@ -107,7 +107,7 @@ async function loadProfiles() {
       const li = document.createElement("li");
       const a = document.createElement("a");
       a.href = `profile.html?id=${doc.id}`;
-      a.textContent = profile.name || "Brak nazwy";
+      a.textContent = profile.nazwa || "Brak nazwy";
       li.appendChild(a);
       profilesContainer.appendChild(li);
     });
