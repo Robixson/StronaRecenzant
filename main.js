@@ -6,6 +6,13 @@ import {
   signOut,
   createUserWithEmailAndPassword,
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCSbsC1xbXwdSvwqnvjounLvC-S1OmdICw",
@@ -19,85 +26,108 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Menu i onAuthStateChanged
+// MENU I WYLOGOWANIE
 const nav = document.getElementById("nav");
 const menuBtn = document.getElementById("menu-button");
-const userEmailSpan = document.getElementById("user-email");
 
-// Obsługa menu hamburgerowego
-if (menuBtn && nav) {
+if (nav && menuBtn) {
   menuBtn.addEventListener("click", () => {
     nav.classList.toggle("hidden");
   });
-}
 
-// Funkcja wylogowania
-function logout() {
-  signOut(auth)
-    .then(() => {
-      alert("Użytkownik został wylogowany.");
-      window.location.href = "index.html"; // możesz zmienić na dowolną stronę po wylogowaniu
-    })
-    .catch((error) => {
-      alert("Błąd podczas wylogowywania: " + error.message);
-    });
-}
-
-// Rejestracja wylogowania przez event delegation (unikamy onclick w HTML)
-if (nav) {
-  nav.addEventListener("click", (e) => {
-    if (e.target && e.target.id === "logout-link") {
-      e.preventDefault();
-      logout();
-    }
-  });
-}
-
-// Aktualizacja menu i emaila przy zmianie stanu autoryzacji
-if (nav) {
+  // Aktualizacja menu w zależności od stanu logowania
   onAuthStateChanged(auth, (user) => {
+    nav.innerHTML = "";
     if (user) {
-      nav.innerHTML = `
-        <a href="index.html">Profile publiczne</a>
-        <a href="user.html">Moj profil</a>
-        <a href="#" id="logout-link">Wyloguj</a>
-      `;
-      if (userEmailSpan) {
-        userEmailSpan.textContent = user.email;
-      }
+      // Zalogowany - linki + wyloguj (bez onclick, event listener będzie niżej)
+      const links = [
+        { href: "index.html", text: "Profile publiczne" },
+        { href: "user.html", text: "Moj profil" },
+      ];
+      links.forEach(({ href, text }) => {
+        const a = document.createElement("a");
+        a.href = href;
+        a.textContent = text;
+        nav.appendChild(a);
+      });
+      // Wyloguj jako button/link z id
+      const logoutLink = document.createElement("a");
+      logoutLink.href = "#";
+      logoutLink.textContent = "Wyloguj";
+      logoutLink.id = "logout-button";
+      nav.appendChild(logoutLink);
+
+      // Dodaj event listener do wyloguj
+      logoutLink.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          await signOut(auth);
+          alert("Użytkownik wylogowany");
+          // Możesz przekierować np. na index.html
+          window.location.href = "index.html";
+        } catch (error) {
+          alert("Błąd podczas wylogowania: " + error.message);
+        }
+      });
     } else {
-      nav.innerHTML = `
-        <a href="index.html">Profile publiczne</a>
-        <a href="login.html">Zaloguj sie</a>
-        <a href="register.html">Rejestracja</a>
-      `;
-      if (userEmailSpan) {
-        userEmailSpan.textContent = "Nie zalogowano";
-      }
+      // Niezalogowany - linki do logowania i rejestracji
+      const links = [
+        { href: "index.html", text: "Profile publiczne" },
+        { href: "login.html", text: "Zaloguj się" },
+        { href: "register.html", text: "Rejestracja" },
+      ];
+      links.forEach(({ href, text }) => {
+        const a = document.createElement("a");
+        a.href = href;
+        a.textContent = text;
+        nav.appendChild(a);
+      });
     }
   });
 }
 
-// Logowanie (na login.html)
+// ŁADOWANIE PROFILI NA index.html
+async function loadProfiles() {
+  const profilesContainer = document.getElementById("profiles-list");
+  if (!profilesContainer) return;
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "profiles"));
+    profilesContainer.innerHTML = "";
+
+    if (querySnapshot.empty) {
+      profilesContainer.textContent = "Brak profili do wyświetlenia.";
+      return;
+    }
+
+    querySnapshot.forEach((doc) => {
+      const profile = doc.data();
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = `profile.html?id=${doc.id}`;
+      a.textContent = profile.name || "Brak nazwy";
+      li.appendChild(a);
+      profilesContainer.appendChild(li);
+    });
+  } catch (error) {
+    console.error("Błąd podczas wczytywania profili:", error);
+    profilesContainer.textContent = "Wystąpił błąd podczas ładowania profili.";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadProfiles();
+});
+
+// LOGOWANIE (login.html)
 const loginForm = document.getElementById("login-form");
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
-
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-
-    console.log("emailInput:", emailInput);
-    console.log("passwordInput:", passwordInput);
-
-    if (!emailInput || !passwordInput) {
-      console.error("Nie znaleziono inputa email lub password");
-      return;
-    }
-
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const email = loginForm.email.value;
+    const password = loginForm.password.value;
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
@@ -113,9 +143,7 @@ if (loginForm) {
   });
 }
 
-
-
-// Rejestracja (na register.html)
+// REJESTRACJA (register.html)
 const registerForm = document.getElementById("register-form");
 if (registerForm) {
   registerForm.addEventListener("submit", (e) => {
@@ -125,7 +153,7 @@ if (registerForm) {
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
-        window.location.href = "index.html"; // przekierowanie po rejestracji
+        window.location.href = "index.html";
       })
       .catch((error) => {
         const registerError = document.getElementById("register-error");
