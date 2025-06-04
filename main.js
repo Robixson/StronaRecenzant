@@ -20,94 +20,82 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Elementy DOM
+// Menu i onAuthStateChanged
 const nav = document.getElementById("nav");
 const menuBtn = document.getElementById("menu-button");
 const userEmailSpan = document.getElementById("user-email");
 
-// Menu - toggle
-if (nav && menuBtn) {
+// Obsługa menu hamburgerowego
+if (menuBtn && nav) {
   menuBtn.addEventListener("click", () => {
     nav.classList.toggle("hidden");
   });
 }
 
-// Aktualizacja menu i emaila przy zmianie stanu użytkownika
-onAuthStateChanged(auth, (user) => {
-  if (!nav) return;
-
-  if (user) {
-    nav.innerHTML = `
-      <a href="index.html">Profile publiczne</a>
-      <a href="user.html">Moj profil</a>
-      <a href="#" id="logout-link">Wyloguj</a>
-    `;
-
-    if (userEmailSpan) {
-      userEmailSpan.textContent = user.email;
-    }
-
-    // Podpięcie event listenera do wylogowania (bo link jest teraz dynamiczny)
-    const logoutLink = document.getElementById("logout-link");
-    if (logoutLink) {
-      logoutLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        logout();
-      });
-    }
-  } else {
-    nav.innerHTML = `
-      <a href="index.html">Profile publiczne</a>
-      <a href="login.html">Zaloguj sie</a>
-      <a href="register.html">Rejestracja</a>
-    `;
-
-    if (userEmailSpan) {
-      userEmailSpan.textContent = "Nie zalogowano";
-    }
-  }
-});
-
 // Funkcja wylogowania
 function logout() {
   signOut(auth)
     .then(() => {
-      alert("Uzytkownik wylogowany.");
-      window.location.href = "index.html";
+      alert("Użytkownik został wylogowany.");
+      window.location.href = "index.html"; // możesz zmienić na dowolną stronę po wylogowaniu
     })
     .catch((error) => {
-      alert("Blad przy wylogowywaniu: " + error.message);
+      alert("Błąd podczas wylogowywania: " + error.message);
     });
+}
+
+// Rejestracja wylogowania przez event delegation (unikamy onclick w HTML)
+if (nav) {
+  nav.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "logout-link") {
+      e.preventDefault();
+      logout();
+    }
+  });
+}
+
+// Aktualizacja menu i emaila przy zmianie stanu autoryzacji
+if (nav) {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      nav.innerHTML = `
+        <a href="index.html">Profile publiczne</a>
+        <a href="user.html">Moj profil</a>
+        <a href="#" id="logout-link">Wyloguj</a>
+      `;
+      if (userEmailSpan) {
+        userEmailSpan.textContent = user.email;
+      }
+    } else {
+      nav.innerHTML = `
+        <a href="index.html">Profile publiczne</a>
+        <a href="login.html">Zaloguj sie</a>
+        <a href="register.html">Rejestracja</a>
+      `;
+      if (userEmailSpan) {
+        userEmailSpan.textContent = "Nie zalogowano";
+      }
+    }
+  });
 }
 
 // Logowanie (na login.html)
 const loginForm = document.getElementById("login-form");
-const loginErrorDiv = document.getElementById("login-error");
-
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = loginForm.email.value;
     const password = loginForm.password.value;
 
-    if (loginErrorDiv) loginErrorDiv.textContent = "";
-
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        window.location.href = "index.html";
+        window.location.href = "index.html"; // przekierowanie po zalogowaniu
       })
-      .catch((error) => {
-        if (loginErrorDiv) {
-          if (
-            error.code === "auth/user-not-found" ||
-            error.code === "auth/wrong-password"
-          ) {
-            loginErrorDiv.textContent = "Nieprawidłowy email lub hasło";
-          } else if (error.code === "auth/invalid-email") {
-            loginErrorDiv.textContent = "Nieprawidłowy format emaila";
-          } else {
-            loginErrorDiv.textContent = error.message;
-          }
+      .catch(() => {
+        const loginError = document.getElementById("login-error");
+        if (loginError) {
+          loginError.textContent = "Nieprawidłowy email lub hasło";
+          loginError.style.color = "red";
         }
       });
   });
@@ -115,31 +103,21 @@ if (loginForm) {
 
 // Rejestracja (na register.html)
 const registerForm = document.getElementById("register-form");
-const registerErrorDiv = document.getElementById("register-error");
-
 if (registerForm) {
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = registerForm.email.value;
     const password = registerForm.password.value;
 
-    if (registerErrorDiv) registerErrorDiv.textContent = "";
-
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
-        window.location.href = "index.html";
+        window.location.href = "index.html"; // przekierowanie po rejestracji
       })
       .catch((error) => {
-        if (registerErrorDiv) {
-          if (error.code === "auth/email-already-in-use") {
-            registerErrorDiv.textContent = "Email juz jest uzyty";
-          } else if (error.code === "auth/invalid-email") {
-            registerErrorDiv.textContent = "Nieprawidlowy format emaila";
-          } else if (error.code === "auth/weak-password") {
-            registerErrorDiv.textContent = "Haslo jest zbyt slabe";
-          } else {
-            registerErrorDiv.textContent = error.message;
-          }
+        const registerError = document.getElementById("register-error");
+        if (registerError) {
+          registerError.textContent = error.message;
+          registerError.style.color = "red";
         }
       });
   });
