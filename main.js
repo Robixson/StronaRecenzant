@@ -95,6 +95,8 @@ async function loadProfiles() {
 
   try {
     const querySnapshot = await getDocs(collection(db, "baza"));
+    console.log("Pobrano profile:", querySnapshot.size);
+
     profilesContainer.innerHTML = "";
 
     if (querySnapshot.empty) {
@@ -116,6 +118,7 @@ async function loadProfiles() {
     profilesContainer.textContent = "Wystąpił błąd podczas ładowania profili.";
   }
 }
+
 
 window.addEventListener("DOMContentLoaded", () => {
   loadProfiles();
