@@ -3,8 +3,10 @@ import {
   getAuth,
   onAuthStateChanged,
   signOut,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword 
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
 import {
   getFirestore,
   collection,
