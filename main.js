@@ -172,3 +172,12 @@ if (registerForm) {
       });
   });
 }
+
+// USER.HTML – wyswietlenie emaila zalogowanego uzytkownika
+onAuthStateChanged(auth, (user) => {
+  const userEmailSpan = document.getElementById("user-email");
+  if (user && userEmailSpan) {
+    userEmailSpan.textContent = user.email;
+    console.log("Zalogowany użytkownik:", user.email); // pomocniczy log
+  }
+});
