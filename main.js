@@ -181,3 +181,112 @@ onAuthStateChanged(auth, (user) => {
     console.log("Zalogowany użytkownik:", user.email); // pomocniczy log
   }
 });
+
+import { getDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+window.addEventListener("DOMContentLoaded", () => {
+  // Tylko na stronie profile.html
+  if (!document.getElementById("profile-name")) return;
+
+  const reviewSection = document.getElementById("review-section");
+  const reviewForm = document.getElementById("review-form");
+  const reviewText = document.getElementById("review-text");
+  const reviewsList = document.getElementById("reviews-list");
+
+  // Pobierz ID profilu z URL (np. profile.html?id=abc123)
+  const urlParams = new URLSearchParams(window.location.search);
+  const profileId = urlParams.get("id");
+
+  if (!profileId) {
+    alert("Brak ID profilu w URL");
+    return;
+  }
+
+  // Załaduj dane profilu (nazwa i opis)
+  async function loadProfile() {
+    try {
+      const docRef = doc(db, "baza", profileId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("profile-name").textContent = data.nazwa || "Brak nazwy";
+        document.getElementById("profile-description").textContent = data.opis || "";
+      } else {
+        alert("Profil nie istnieje");
+      }
+    } catch (error) {
+      console.error("Błąd ładowania profilu:", error);
+    }
+  }
+
+  // Załaduj recenzje
+  async function loadReviews() {
+    reviewsList.innerHTML = "";
+    try {
+      const q = query(
+        collection(db, "reviews"),
+        where("profileId", "==", profileId),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        reviewsList.textContent = "Brak recenzji.";
+        return;
+      }
+      querySnapshot.forEach(doc => {
+        const r = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${r.email}: ${r.review}`;
+        reviewsList.appendChild(li);
+      });
+    } catch (error) {
+      console.error("Błąd ładowania recenzji:", error);
+      reviewsList.textContent = "Błąd podczas ładowania recenzji.";
+    }
+  }
+
+  // Pokaż formularz recenzji tylko gdy zalogowany
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      reviewSection.classList.remove("hidden");
+    } else {
+      reviewSection.classList.add("hidden");
+    }
+  });
+
+  // Obsługa wysłania formularza recenzji
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Musisz być zalogowany, żeby dodać recenzję.");
+        return;
+      }
+      const text = reviewText.value.trim();
+      if (!text) {
+        alert("Recenzja nie może być pusta.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "reviews"), {
+          profileId: profileId,
+          uid: user.uid,
+          email: user.email,
+          review: text,
+          createdAt: new Date()
+        });
+        reviewText.value = "";
+        loadReviews();
+        alert("Recenzja dodana!");
+      } catch (error) {
+        alert("Błąd podczas dodawania recenzji: " + error.message);
+      }
+    });
+  }
+
+  // Wywołaj ładowanie profilu i recenzji
+  loadProfile();
+  loadReviews();
+});
